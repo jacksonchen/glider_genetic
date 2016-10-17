@@ -21,7 +21,7 @@ else:
         print "Please enter a valid file"
     else:
         lines = open(sys.argv[1], 'r').readlines()
-        lines[0] = '"Glider Name",' + matchObj.group(1) + 'A' + matchObj.group(2) + '\n'
+        lines[0] = '"Glider Name",' + str(int(matchObj.group(1))+1) + 'A' + matchObj.group(2) + '\n'
         lines[2] = '"Fuselage Length (cm)",' + calcChances(re.match(r'.+,(.+)', lines[2][:-1]).group(1), 0.5) + '\n'
         lines[3] = '"Wing X Location (cm)",' + calcChances(re.match(r'.+,(.+)', lines[3][:-1]).group(1), 0.5) + '\n'
         lines[4] = '"Stabilizer X Location (cm)",' + calcChances(re.match(r'.+,(.+)', lines[4][:-1]).group(1), 0.5) + '\n'
@@ -41,6 +41,6 @@ else:
         lines[21] = '"Vertical Tail LE Angle (deg.)",' + calcChances(re.match(r'.+,(.+)', lines[21][:-1]).group(1), 0.5) + '\n'
 
 
-        f = open(sys.argv[1], 'w')
+        f = open(str(int(matchObj.group(1))+1) + 'A' + matchObj.group(2) + '.ae', 'w')
         f.writelines(lines)
         f.close()
