@@ -14,11 +14,11 @@ def name(fileName):
     return str(generation) + 'A' + str(planeType)
 
 if (len(sys.argv) < 2):
-    print "Please add the file to be mutated as an argument."
+    print("Please add the file to be mutated as an argument.")
 else:
     matchObj = re.match(r'(.+)A(.+)\.ae', sys.argv[1])
     if matchObj is None:
-        print "Please enter a valid file"
+        print("Please enter a valid file")
     else:
         lines = open(sys.argv[1], 'r').readlines()
         lines[0] = '"Glider Name",' + str(int(matchObj.group(1))+1) + 'A' + matchObj.group(2) + '\n'
