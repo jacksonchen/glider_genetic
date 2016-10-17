@@ -1,10 +1,14 @@
 from random import random
+from random import randint
 
 def name(generation, planeType):
     return str(generation) + 'A' + str(planeType)
 
 def rand(start, end):
-    return str(random() * (end - start) + start)
+    if (start == 0.4):
+        return str(random() * (end - start) + start)
+    else:
+        return str(randint(start, end))
 
 def makePlane(generation, planeType):
     f = open(name(generation, planeType) + '.ae', 'w')
