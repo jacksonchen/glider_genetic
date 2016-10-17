@@ -1,8 +1,6 @@
 from random import random
 from random import randint
 
-def name(generation, planeType):
-    return str(generation) + 'A' + str(planeType)
 
 def rand(start, end):
     if (start == 0.4):
@@ -10,9 +8,9 @@ def rand(start, end):
     else:
         return str(randint(start, end))
 
-def makePlane(generation, planeType):
-    f = open(name(generation, planeType) + '.ae', 'w')
-    f.write('"Glider Name",' + name(generation, planeType) + '\n')
+def makePlane(planeType):
+    f = open(str(planeType) + '.ae', 'w')
+    f.write('"Glider Name",' + str(planeType) + '\n')
     f.write('"1 Piece of Wood",0\n')
     f.write('"Fuselage Length (cm)",' + rand(18, 90) + '\n')
     f.write('"Wing X Location (cm)",' + rand(18, 90) + '\n')
@@ -50,8 +48,7 @@ def makePlane(generation, planeType):
     f.write('"air density (kg/m^3)",1.22\n')
     f.close()
 
-generation = 1
 planeType = 1
 for i in range(50):
-    makePlane(generation, planeType)
+    makePlane(planeType)
     planeType += 1
