@@ -5,9 +5,9 @@ from random import random
 def calcChances(num, diff):
     if (random() < 0.2):
         if (random() < 0.5):
-            return str(float(num) - float(diff))
+            return str(round(float(num) - float(diff), 2))
         else:
-            return str(float(num) + float(diff))
+            return str(round(float(num) + float(diff), 2))
     return str(num)
 
 def name(fileName):

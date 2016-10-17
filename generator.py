@@ -4,7 +4,7 @@ from random import randint
 
 def rand(start, end):
     if (start == 0.4):
-        return str(random() * (end - start) + start)
+        return str(round(random() * (end - start) + start, 2))
     else:
         return str(randint(start, end))
 
