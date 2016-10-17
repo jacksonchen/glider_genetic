@@ -24,7 +24,7 @@ else:
         importedLines = open(sys.argv[1], 'r').readlines()
         for i in range(10):
             lines = importedLines
-            lines[0] = '"Glider Name",' + matchObj.group(1) + ',' + str(planeChild) + '\n'
+            lines[0] = '"Glider Name",' + matchObj.group(1) + 'a' + str(planeChild) + '\n'
             lines[2] = '"Fuselage Length (cm)",' + calcChances(re.match(r'.+,(.+)', lines[2][:-1]).group(1), 0.5) + '\n'
             lines[3] = '"Wing X Location (cm)",' + calcChances(re.match(r'.+,(.+)', lines[3][:-1]).group(1), 0.5) + '\n'
             lines[4] = '"Stabilizer X Location (cm)",' + calcChances(re.match(r'.+,(.+)', lines[4][:-1]).group(1), 0.5) + '\n'
@@ -44,7 +44,7 @@ else:
             lines[21] = '"Vertical Tail LE Angle (deg.)",' + calcChances(re.match(r'.+,(.+)', lines[21][:-1]).group(1), 0.5) + '\n'
 
 
-            f = open(matchObj.group(1) + ',' + str(planeChild) + '.ae', 'w')
+            f = open(matchObj.group(1) + 'a' + str(planeChild) + '.ae', 'w')
             f.writelines(lines)
             f.close()
 
