@@ -1,4 +1,4 @@
-    from random import random
+from random import random
 from random import randint
 
 
@@ -37,8 +37,8 @@ def makePlane(planeType):
     f.write('"configuration name","3/16x3/8x36 spruce, 1/8x4x48 balsa"\n')
     f.write('"maximum wing span (cm)",121.92\n')
     f.write('"maximum wing width (cm)",10.16\n')
-    f.write('"wing thickness (cm)",.32\n')
-    f.write('"wing density (kg/m^3)",132.51\n')
+    f.write('"wing thickness (cm)",.16\n')
+    f.write('"wing density (kg/m^3)",1.04\n')
     f.write('"max fuselage length (cm)",91.44\n')
     f.write('"fuselage mass/length (kg/m)",.01666\n')
     f.write('"fuselage width (top) (cm)",.4763\n')
