@@ -21,7 +21,7 @@ else:
         print("Please enter a valid file")
     else:
         planeChild = 1
-        importedLines = open(sys.argv[1], 'r').readlines()
+        importedLines = open(sys.argv[1].lstrip(), 'r').readlines()
         for i in range(20):
             lines = importedLines
             lines[0] = '"Glider Name",' + matchObj.group(1) + 'a' + str(planeChild) + '\n'
