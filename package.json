@@ -1,0 +1,19 @@
+{
+  "name": "glider",
+  "version": "0.0.1",
+  "description": "Node.js Glider Genetic Algorithm",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jacksonchen/glider_genetic.git"
+  },
+  "author": "Jackson Chen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jacksonchen/glider_genetic/issues"
+  },
+  "homepage": "https://github.com/jacksonchen/glider_genetic#readme"
+}
