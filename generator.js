@@ -25,7 +25,7 @@ function makePlane(planeType) {
     stream.write('"Wing Span (cm)",' + rand(1, 27) + '\n');
     stream.write('"Wing Root Chord (cm)",' + rand(1, 10) + '\n');
     stream.write('"Wing Taper Ratio",' + rand(0.4, 1) + '\n');
-    stream.write('"Wing LE Angle   (deg.)",' + rand(0, 30) + '\n');
+    stream.write('"Wing LE Angle (deg.)",' + rand(0, 30) + '\n');
     stream.write('"Wing Sweep Type",0\n');
     stream.write('"Stabilizer Span (cm)",' + rand(1, 27)+ '\n');
     stream.write('"Stabilizer Root Chord (cm)",' + rand(1, 10) + '\n');

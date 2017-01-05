@@ -28,31 +28,34 @@ else {
     fs.readFile(found[0], 'utf8', function(err, data) {
       if (err) throw err;
 
-      var oldLines = data.split(/(?=\n)/).slice(0, -1);
+      var oldLines = data.split(/(.+\n)/).filter(function(e) {return e});
+
       for (var i = 1; i < 21; i++) {
         var lines = oldLines.slice();
-        lines[0] = '"Glider Name",' + found[1] + 'a' + i;
-        lines[2] = '\n"Fuselage Length (cm)",' + calcChances(Number(lines[2].match(reNum)[1]), 0.25);
-        lines[3] = '\n"Wing X Location (cm)",' + calcChances(Number(lines[3].match(reNum)[1]), 0.25);
-        lines[4] = '\n"Stabilizer X Location (cm)",' + calcChances(Number(lines[4].match(reNum)[1]), 0.25);
-        lines[5] = '\n"Vertical Tail X Location (cm)",' + calcChances(Number(lines[5].match(reNum)[1]), 0.25);
-        lines[6] = '\n"Mass at the nose (g)",' + calcChances(Number(lines[6].match(reNum)[1]), 0.25);
-        lines[8] = '\n"Wing Span (cm)",' + calcChances(Number(lines[8].match(reNum)[1]), 0.25);
-        lines[9] = '\n"Wing Root Chord (cm)",' + calcChances(Number(lines[9].match(reNum)[1]), 0.25);
-        lines[10] = '\n"Wing Taper Ratio",' + calcChances(Number(lines[10].match(reNum)[1]), 0.025);
-        lines[11] = '\n"Wing LE Angle (deg.)",' + calcChances(Number(lines[11].match(reNum)[1]), 0.25);
-        lines[13] = '\n"Stabilizer Span (cm)",' + calcChances(Number(lines[13].match(reNum)[1]), 0.25);
-        lines[14] = '\n"Stabilizer Root Chord (cm)",' + calcChances(Number(lines[14].match(reNum)[1]), 0.25);
-        lines[15] = '\n"Stabilizer Taper Ratio",' + calcChances(Number(lines[15].match(reNum)[1]), 0.025);
-        lines[16] = '\n"Stabilizer LE Angle (deg.)",' + calcChances(Number(lines[16].match(reNum)[1]), 0.25);
-        lines[18] = '\n"Vertical Tail Height (cm)",' + calcChances(Number(lines[18].match(reNum)[1]), 0.25);
-        lines[19] = '\n"Vertical Tail Root Chord (cm)",' + calcChances(Number(lines[19].match(reNum)[1]), 0.25);
-        lines[20] = '\n"Vertical Tail Taper Ratio",' + calcChances(Number(lines[20].match(reNum)[1]), 0.025);
-        lines[21] = '\n"Vertical Tail LE Angle (deg.)",' + calcChances(Number(lines[21].match(reNum)[1]), 0.25);
+        lines[0] = '"Glider Name",' + found[1] + 'a' + i + '\n';
+        lines[2] = '"Fuselage Length (cm)",' + calcChances(Number(lines[2].match(reNum)[1]), 0.25) + '\n';
+        lines[3] = '"Wing X Location (cm)",' + calcChances(Number(lines[3].match(reNum)[1]), 0.25) + '\n';
+        lines[4] = '"Stabilizer X Location (cm)",' + calcChances(Number(lines[4].match(reNum)[1]), 0.25) + '\n';
+        lines[5] = '"Vertical Tail X Location (cm)",' + calcChances(Number(lines[5].match(reNum)[1]), 0.25) + '\n';
+        lines[6] = '"Mass at the nose (g)",' + calcChances(Number(lines[6].match(reNum)[1]), 0.25) + '\n';
+        lines[8] = '"Wing Span (cm)",' + calcChances(Number(lines[8].match(reNum)[1]), 0.25) + '\n';
+        lines[9] = '"Wing Root Chord (cm)",' + calcChances(Number(lines[9].match(reNum)[1]), 0.25) + '\n';
+        lines[10] = '"Wing Taper Ratio",' + calcChances(Number(lines[10].match(reNum)[1]), 0.025) + '\n';
+        lines[11] = '"Wing LE Angle (deg.)",' + calcChances(Number(lines[11].match(reNum)[1]), 0.25) + '\n';
+        lines[13] = '"Stabilizer Span (cm)",' + calcChances(Number(lines[13].match(reNum)[1]), 0.25) + '\n';
+        lines[14] = '"Stabilizer Root Chord (cm)",' + calcChances(Number(lines[14].match(reNum)[1]), 0.25) + '\n';
+        lines[15] = '"Stabilizer Taper Ratio",' + calcChances(Number(lines[15].match(reNum)[1]), 0.025) + '\n';
+        lines[16] = '"Stabilizer LE Angle (deg.)",' + calcChances(Number(lines[16].match(reNum)[1]), 0.25) + '\n';
+        lines[18] = '"Vertical Tail Height (cm)",' + calcChances(Number(lines[18].match(reNum)[1]), 0.25) + '\n';
+        lines[19] = '"Vertical Tail Root Chord (cm)",' + calcChances(Number(lines[19].match(reNum)[1]), 0.25) + '\n';
+        lines[20] = '"Vertical Tail Taper Ratio",' + calcChances(Number(lines[20].match(reNum)[1]), 0.025) + '\n';
+        lines[21] = '"Vertical Tail LE Angle (deg.)",' + calcChances(Number(lines[21].match(reNum)[1]), 0.25) + '\n';
 
-        fs.writeFile(found[1] + 'a' + i + '.ae', lines, 'utf8', function(err) {
-          if (err) throw err;
-        })
+        var stream = fs.createWriteStream(found[1] + 'a' + i + '.ae');
+        lines.forEach(function(line) {
+          stream.write(line);
+        });
+        stream.end();
       }
     });
   }
