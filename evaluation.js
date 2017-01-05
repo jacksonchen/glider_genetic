@@ -27,8 +27,8 @@ function analyze(lines) {
       cWing = (lambdaWing * crWing + KWing * aWing - crWing) / KWing,
       cStab = (lambdaStab * crStab + KStab * aStab - crStab) / KStab,
       cVert = (lambdaVert * crVert + KVert * aVert - crVert) / KVert,
-      SWing = (1/2) * Math.pow(KWing, 2) * (cWing - aWing) + KWing * crWing,
-      SStab = (1/2) * Math.pow(KStab, 2) * (cStab - aStab) + KStab * crStab,
+      SWing = 2 * ((1/2) * Math.pow(KWing, 2) * (cWing - aWing) + KWing * crWing),
+      SStab = 2 * ((1/2) * Math.pow(KStab, 2) * (cStab - aStab) + KStab * crStab),
       SVert = (1/2) * Math.pow(KVert, 2) * (cVert - aVert) + KVert * crVert;
 
   var QyWing = (1/6) * Math.pow(KWing, 3) * (Math.pow(cWing, 2) - Math.pow(aWing, 2)) + (1/2) * Math.pow(KWing, 2) * cWing * crWing + (1/2) * KWing + Math.pow(crWing, 2),
@@ -59,9 +59,15 @@ function analyze(lines) {
         YVert = (KVert/6) * (1 + 2 * lambdaVert) * (1 + lambdaVert);
       }
 
+  var ARWing = bWing / cBarWing,
+      ARStab = bStab / cBarStab;
+
   console.log("Aspect ratio wing: ");
-  console.log(Math.pow(bWing, 2)/SWing)
+  console.log(Math.pow(bWing, 2)/SWing);
   console.log(bWing / cBarWing);
+  console.log("Aspect ratio Stab: ");
+  console.log(Math.pow(bWing, 2)/SStab);
+  console.log(bWing / cBarStab);
 }
 
 if (process.argv.length != 3) {
