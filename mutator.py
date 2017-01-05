@@ -23,7 +23,7 @@ else:
         planeChild = 1
         importedLines = open(sys.argv[1].lstrip(), 'r').readlines()
         for i in range(20):
-            lines = importedLines
+            lines = list(importedLines)
             lines[0] = '"Glider Name",' + matchObj.group(1) + 'a' + str(planeChild) + '\n'
             lines[2] = '"Fuselage Length (cm)",' + calcChances(re.match(r'.+,(.+)', lines[2][:-1]).group(1), 0.25) + '\n'
             lines[3] = '"Wing X Location (cm)",' + calcChances(re.match(r'.+,(.+)', lines[3][:-1]).group(1), 0.25) + '\n'
