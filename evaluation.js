@@ -11,6 +11,14 @@ function analyze(lines) {
       lambdaWing = Number(lines[10]),
       lambdaStab = Number(lines[15]),
       lambdaVert = Number(lines[20]),
+      locationWing = Number(lines[3]),
+      locationStab = Number(lines[4]),
+      locationVert = Number(lines[5]),
+      lengthFuselage = Number(lines[2]),
+      momentFuselage = Number(lines[30]),
+      density = Number(lines[28]),
+      thickness = Number(lines[27]),
+      massNose = Number(lines[6]),
       crWing = Number(lines[9]),
       crStab = Number(lines[14]),
       crVert = Number(lines[19]),
@@ -59,15 +67,72 @@ function analyze(lines) {
         YVert = (KVert/6) * (1 + 2 * lambdaVert) * (1 + lambdaVert);
       }
 
-  var ARWing = bWing / cBarWing,
-      ARStab = bStab / cBarStab;
+  var xlocalWing = YWing * Math.tan(LambdaWing) + cBarWing/4,
+      xlocalStab = YStab * Math.tan(LambdaStab) + cBarStab/4,
+      xlocalVert = YVert * Math.tan(LambdaVert) + cBarVert/4,
+      xWing = xlocalWing + locationWing,
+      xStab = xlocalStab + locationStab,
+      xVert = xlocalVert + locationVert;
 
-  console.log("Aspect ratio wing: ");
-  console.log(Math.pow(bWing, 2)/SWing);
-  console.log(bWing / cBarWing);
-  console.log("Aspect ratio Stab: ");
-  console.log(Math.pow(bWing, 2)/SStab);
-  console.log(bWing / cBarStab);
+  var ARWing = Math.pow(bWing, 2)/SWing,
+      ARStab = Math.pow(bStab, 2)/SStab;
+
+  // Helmbold equation: https://www.princeton.edu/~stengel/MAE331Lecture3.pdf
+  // Note that this model differs from Aery technical paper
+  var CLAlphaWing = Math.PI * ARWing / (1 + Math.sqrt(1 + Math.pow(ARWing/2, 2))),
+      CLAlphaStab = Math.PI * ARStab / (1 + Math.sqrt(1 + Math.pow(ARStab/2, 2))),
+      rateChangeDownwash = 2 * CLAlphaWing / (Math.PI * ARWing);
+
+  var CVert = (xVert - xWing) * SVert / (bWing * SWing);
+  // if (CVert < 0.035) {
+  //   return 0; // Vertical Tail is too small or poorly placed
+  // }
+
+  var CStab = (xStab - xWing) * SStab / (Math.pow(SWing, 2) / bWing);
+  // if (CStab < 0.5 && CStab > -0.1) {
+  //   return 0; // Incorrect stabilizer sizing or placement
+  // }
+
+  var alphaStallWing = 8;
+
+  var center = lengthFuselage / 2,
+      massWing = density * thickness * SWing / Math.pow(10, 3),
+      massStab = density * thickness * SStab / Math.pow(10, 3),
+      massVert = density * thickness * SVert / Math.pow(10, 3),
+      massFuselage = lengthFuselage * momentFuselage * 10,
+      // xCOM = (center * massNose + (locationWing - center) * massWing
+      //                           + (locationStab - center) * massStab
+      //                           + (locationVert - center) * massVert)
+      //                           / (massNose + massWing + massStab + massVert + lengthFuselage * momentFuselage * 10);
+      xCOM = (massFuselage * lengthFuselage/2 + locationWing * massWing
+                                              + locationStab * massStab
+                                              + locationVert * massVert)
+                                              / (massNose + massWing + massStab + massVert + massFuselage);
+
+  var hn = CLAlphaWing * xWing / cBarWing + 0.9 * SStab * CLAlphaStab * xStab * (1 - rateChangeDownwash) / (SWing * cBarStab) /
+           (CLAlphaWing + 0.9 * SStab * CLAlphaStab * (1 - rateChangeDownwash) / SWing);
+
+  console.log("Wing: " + locationWing * massWing);
+  console.log("locationWing: " + locationWing);
+  console.log("massWing: " + massWing);
+  console.log("sWing: " + SWing);
+
+  console.log("Stab: " + locationStab * massStab);
+  console.log("locationStab: " + locationStab);
+  console.log("massWing: " + massStab);
+  console.log("sStab: " + SStab);
+
+  console.log("Vert: " + locationVert * massVert);
+  console.log("locationVert: " + locationVert);
+  console.log("massVert: " + massVert);
+  console.log("sVert: " + SVert);
+
+  console.log("Fuselage: " + lengthFuselage * massFuselage);
+  console.log("lengthFuselage: " + lengthFuselage);
+  console.log("massFuselage: " + massFuselage);
+  console.log("Total mass: " + (massNose + massWing + massStab + massVert + lengthFuselage * momentFuselage * 10));
+  console.log("Center of mass " + xCOM);
+
 }
 
 if (process.argv.length != 3) {

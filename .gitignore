@@ -1,3 +1,4 @@
 *.ae
 *.log
 Misc/
+.DS_Store
