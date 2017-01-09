@@ -127,14 +127,15 @@ function analyze(lines) {
       massWing = density * thickness * areaWing / Math.pow(10, 3),
       massStab = density * thickness * areaStab / Math.pow(10, 3),
       massVert = density * thickness * areaVert / Math.pow(10, 3),
+      massFuselage = lengthFuselage * momentFuselage * 10,
+      massTotal = massNose + massWing + massStab + massVert + massFuselage
       // massWing = density * thickness * SWing / Math.pow(10, 3),
       // massStab = density * thickness * SStab / Math.pow(10, 3),
       // massVert = density * thickness * SVert / Math.pow(10, 3),
-      massFuselage = lengthFuselage * momentFuselage * 10,
-      xCOM = ((-1) * center * massNose + (locationWing - center) * massWing
-                                + (locationStab - center) * massStab
-                                + (locationVert - center) * massVert)
-                                / (massNose + massWing + massStab + massVert + massFuselage) + center;
+      // xCOM = ((-1) * center * massNose + (locationWing - center) * massWing
+      //                           + (locationStab - center) * massStab
+      //                           + (locationVert - center) * massVert)
+      //                           / (massNose + massWing + massStab + massVert + massFuselage) + center;
 
   console.log("Centroid of trapezoid: " + (heightWing / 3) * (crWing + 2 * ctWing) / (crWing + ctWing));
   console.log("Half root: " + (crWing / 2));
@@ -144,12 +145,11 @@ function analyze(lines) {
   // var locationStab = locationStab + (heightStab / 3) * (crStab + 2 * ctStab) / (crStab + ctStab);
   // var locationVert = locationVert + (heightVert / 3) * (crVert + 2 * ctVert) / (crVert + ctVert);
 
-  var xCOM2 = (massFuselage * lengthFuselage/2 + locationWing * massWing
+  var xCOM = (massFuselage * lengthFuselage/2 + locationWing * massWing
                                               + locationStab * massStab
-                                              + locationVert * massVert)
-                                              / (massNose + massWing + massStab + massVert + massFuselage);
+                                              + locationVert * massVert) / massTotal;
 
-  var hn = (CLAlphaWing * xWing / cBarWing + 0.9 * SStab * CLAlphaStab * xStab * (1 - rateChangeDownwashWing) / (SWing * cBarStab)) /
+  var hn =  (CLAlphaWing * xWing / cBarWing + 0.9 * SStab * CLAlphaStab * xStab * (1 - rateChangeDownwashWing) / (SWing * cBarStab)) /
             (CLAlphaWing + 0.9 * SStab * CLAlphaStab * (1 - rateChangeDownwashWing) / SWing);
   var hn2 = (CLAlphaWing * xWing / cBarWing + 0.9 * SStab * CLAlphaStab * xStab * (1 - rateChangeDownwashStab) / (SWing * cBarStab)) /
             (CLAlphaWing + 0.9 * SStab * CLAlphaStab * (1 - rateChangeDownwashWing) / SWing);
@@ -169,9 +169,15 @@ function analyze(lines) {
   console.log("CLAlphaWing: " + CLAlphaWing);
 
 
-  var Rs = SStab / SWing;
+  var Rs = SStab / SWing,
+      k1 = 2 * (massTotal * 9.8) / (density * Math.pow(throwingVel, 2) * SWing),
+      k2 = 0.9 * Rs * CLAlphaStab * (xStab - xCOM) / cBarStab,
+      k3 = CLAlphaWing * (xCOM - xWing) / cBarWing - 0.9 * Rs * CLAlphaStab * (1 - rateChangeDownwashStab) * (xStab - xCOM) / cBarStab,
+      k4 = CLAlphaWing + 0.9 * CLAlphaStab * (1 - rateChangeDownwashStab),
+      k5 = 0.9 * Rs * CLAlphaStab,
+      ih = k1 / ((k2/ k3) * k4 + k5);
 
-  var alphaFlight = 0.9 * Rs * CLAlphaStab * CLAlphaWing * (xStab - xWing) / cBarWing;
+  var alphaFlight = (ih * k2 / k3) * 180 / Math.PI;
 
   console.log("\n------------------------------");
   console.log("Aery Evaluation Number: " + NaN);
@@ -181,7 +187,7 @@ function analyze(lines) {
   console.log("Vertical Tail Location " + locationVert);
   console.log("Mass at Nose " + massNose + "\n");
 
-  console.log("Center of Gravity Location " + xCOM + " or " + xCOM2);
+  console.log("Center of Gravity Location " + xCOM);
   console.log("Neutral Point Location " + hn);
   console.log("ESTIMATED Mass " + (massWing + massStab + massVert + massNose + massFuselage));
   console.log("Wing Loading " + (massWing + massStab + massVert + massNose + massFuselage) / SWing);
