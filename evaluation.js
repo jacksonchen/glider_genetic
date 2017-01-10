@@ -13,20 +13,21 @@ function analyze(lines) {
       lambdaVert = Number(lines[20]),
       lengthFuselage = Number(lines[2]),
       widthFuselage = Number(lines[31]),
-      momentFuselage = Number(lines[30]),
-      density = Number(lines[28]),
+      momentFuselage = Number(lines[30]) * 10,
+      density = Number(lines[28]) / Math.pow(10, 3),
+      densityAir = Number(lines[35]) / Math.pow(10, 3),
       thickness = Number(lines[27]),
       massNose = Number(lines[6]),
       crWing = Number(lines[9]),
       crStab = Number(lines[14]),
       crVert = Number(lines[19]),
-      locationWing = Number(lines[3]) + crWing / 2,
-      locationStab = Number(lines[4]) + crStab / 2,
-      locationVert = Number(lines[5]) + crVert / 2,
+      locationWing = Number(lines[3])
+      locationStab = Number(lines[4]),
+      locationVert = Number(lines[5]),
       bWing = Number(lines[8]),
       bStab = Number(lines[13]),
       bVert = Number(lines[18]),
-      throwingVel = Number(lines[7]);
+      throwingVel = Number(lines[7]) * Math.pow(10, 5) / 3600;
 
   var KWing = bWing/2,
       KStab = bStab/2,
@@ -82,13 +83,6 @@ function analyze(lines) {
       xStab = xlocalStab + locationStab,
       xVert = xlocalVert + locationVert;
 
-  // console.log("xlocalStab: " + xlocalStab);
-  // console.log("YStab: " + YStab);
-  // console.log("LambdaStab: " + LambdaStab);
-  // console.log("tan(LambdaStab): " + Math.tan(LambdaStab));
-  // console.log("cBarStab: " + cBarStab);
-  // console.log("");
-
   var ARWing = Math.pow(bWing, 2)/SWing,
       ARStab = Math.pow(bStab, 2)/SStab;
 
@@ -96,8 +90,7 @@ function analyze(lines) {
   // Note that this model differs from Aery technical paper
   var CLAlphaWing = Math.PI * ARWing / (1 + Math.sqrt(1 + Math.pow(ARWing/2, 2))),
       CLAlphaStab = Math.PI * ARStab / (1 + Math.sqrt(1 + Math.pow(ARStab/2, 2))),
-      rateChangeDownwashWing = 2 * CLAlphaWing / (Math.PI * ARWing),
-      rateChangeDownwashStab = 2 * CLAlphaStab / (Math.PI * ARStab);
+      rateChangeDownwash = 2 * CLAlphaWing / (Math.PI * ARWing);
 
   var CVert = (xVert - xWing) * SVert / (bWing * SWing);
   // if (CVert < 0.035) {
@@ -111,33 +104,13 @@ function analyze(lines) {
 
   var alphaStallWing = 8; //WRONG
 
+  var massFuselage = lengthFuselage * momentFuselage,
+      massWing = density * thickness * SWing,
+      massStab = density * thickness * SStab,
+      massVert = density * thickness * SVert,
+      massTotal = massNose + massWing + massStab + massVert + massFuselage;
 
-  /* Jackson's random calculations */
-  var heightWing = bWing / 2;
-  var heightStab = bStab / 2;
-  var heightVert = bVert;
-
-  var areaWing = 2 * crWing * ctWing * heightWing / 2;
-  var areaStab = 2 * crStab * ctStab * heightStab / 2;
-  var areaVert = crVert * ctVert * heightVert / 2;
-
-
-
-  var center = lengthFuselage / 2,
-      massWing = density * thickness * areaWing / Math.pow(10, 3),
-      massStab = density * thickness * areaStab / Math.pow(10, 3),
-      massVert = density * thickness * areaVert / Math.pow(10, 3),
-      massFuselage = lengthFuselage * momentFuselage * 10,
-      massTotal = massNose + massWing + massStab + massVert + massFuselage
-      // massWing = density * thickness * SWing / Math.pow(10, 3),
-      // massStab = density * thickness * SStab / Math.pow(10, 3),
-      // massVert = density * thickness * SVert / Math.pow(10, 3),
-      // xCOM = ((-1) * center * massNose + (locationWing - center) * massWing
-      //                           + (locationStab - center) * massStab
-      //                           + (locationVert - center) * massVert)
-      //                           / (massNose + massWing + massStab + massVert + massFuselage) + center;
-
-  console.log("Centroid of trapezoid: " + (heightWing / 3) * (crWing + 2 * ctWing) / (crWing + ctWing));
+  console.log("Centroid of trapezoid: " + (KWing / 3) * (crWing + 2 * ctWing) / (crWing + ctWing));
   console.log("Half root: " + (crWing / 2));
 
 
@@ -145,37 +118,42 @@ function analyze(lines) {
   // var locationStab = locationStab + (heightStab / 3) * (crStab + 2 * ctStab) / (crStab + ctStab);
   // var locationVert = locationVert + (heightVert / 3) * (crVert + 2 * ctVert) / (crVert + ctVert);
 
-  var xCOM = (massFuselage * lengthFuselage/2 + locationWing * massWing
-                                              + locationStab * massStab
-                                              + locationVert * massVert) / massTotal;
+  // GOODISH
+  // var xCOM = (massFuselage * lengthFuselage / 2 + (locationWing + crWing / 2) * massWing
+  //                                               + (locationStab + crStab / 2) * massStab
+  //                                               + (locationVert + crVert / 2) * massVert) / massTotal;
 
-  var hn =  (CLAlphaWing * xWing / cBarWing + 0.9 * SStab * CLAlphaStab * xStab * (1 - rateChangeDownwashWing) / (SWing * cBarStab)) /
-            (CLAlphaWing + 0.9 * SStab * CLAlphaStab * (1 - rateChangeDownwashWing) / SWing);
-  var hn2 = (CLAlphaWing * xWing / cBarWing + 0.9 * SStab * CLAlphaStab * xStab * (1 - rateChangeDownwashStab) / (SWing * cBarStab)) /
-            (CLAlphaWing + 0.9 * SStab * CLAlphaStab * (1 - rateChangeDownwashWing) / SWing);
-  var hn3 = (CLAlphaWing * xWing / cBarWing + 0.9 * SStab * CLAlphaStab * xStab * (1 - rateChangeDownwashWing) / (SWing * cBarStab)) /
-            (CLAlphaWing + 0.9 * SStab * CLAlphaStab * (1 - rateChangeDownwashStab) / SWing);
-  var hn4 = (CLAlphaWing * xWing / cBarWing + 0.9 * SStab * CLAlphaStab * xStab * (1 - rateChangeDownwashStab) / (SWing * cBarStab)) /
-            (CLAlphaWing + 0.9 * SStab * CLAlphaStab * (1 - rateChangeDownwashStab) / SWing);
+  var xCOM = (massFuselage * lengthFuselage / 2 + (locationWing + xlocalWing) * massWing
+                                                + (locationStab + xlocalStab) * massStab
+                                                + (locationVert + xlocalVert) * massVert) / massTotal;
 
-  console.log("Neutral Point: " + hn);
-  console.log("1 - rateChangeDownwashWing: " + (1 - rateChangeDownwashWing));
-  console.log("xWing: " + xWing);
-  console.log("SStab: " + SStab);
-  console.log("CLAlphaStab: " + CLAlphaStab);
-  console.log("xStab: " + xStab);
-  console.log("SWing: " + SWing);
-  console.log("cBarStab: " + cBarStab);
-  console.log("CLAlphaWing: " + CLAlphaWing);
+  var hn =  (CLAlphaWing * xWing / cBarWing + 0.9 * SStab * CLAlphaStab * xStab * (1 - rateChangeDownwash) / (SWing * cBarStab)) /
+            (CLAlphaWing + 0.9 * SStab * CLAlphaStab * (1 - rateChangeDownwash) / SWing);
 
+  // console.log("Neutral Point: " + hn);
+  // console.log("1 - rateChangeDownwash: " + (1 - rateChangeDownwash));
+  // console.log("xWing: " + xWing);
+  // console.log("SStab: " + SStab);
+  // console.log("CLAlphaStab: " + CLAlphaStab);
+  // console.log("xStab: " + xStab);
+  // console.log("SWing: " + SWing);
+  // console.log("cBarStab: " + cBarStab);
+  // console.log("CLAlphaWing: " + CLAlphaWing);
+
+  /* More bullshit from page 13: http://digitalcommons.usu.edu/cgi/viewcontent.cgi?article=1090&context=mae_facpub */
+  var xWing2 = cBarWing * (ARWing * (1 + 2 * lambdaWing) * Math.tan(LambdaWing) / (6 * (1 + lambdaWing)));
+  var xStab2 = cBarStab * (ARStab * (1 + 2 * lambdaStab) * Math.tan(LambdaStab) / (6 * (1 + lambdaStab)));
 
   var Rs = SStab / SWing,
-      k1 = 2 * (massTotal * 9.8) / (density * Math.pow(throwingVel, 2) * SWing),
+      k1 = 2 * (massTotal * 9.8 * 100) / (densityAir * Math.pow(throwingVel, 2) * SWing),
       k2 = 0.9 * Rs * CLAlphaStab * (xStab - xCOM) / cBarStab,
-      k3 = CLAlphaWing * (xCOM - xWing) / cBarWing - 0.9 * Rs * CLAlphaStab * (1 - rateChangeDownwashStab) * (xStab - xCOM) / cBarStab,
-      k4 = CLAlphaWing + 0.9 * CLAlphaStab * (1 - rateChangeDownwashStab),
+      k3 = CLAlphaWing * (xCOM - xWing) / cBarWing - 0.9 * Rs * CLAlphaStab * (1 - rateChangeDownwash) * (xStab - xCOM) / cBarStab,
+      k4 = CLAlphaWing + 0.9 * Rs * CLAlphaStab * (1 - rateChangeDownwash),
       k5 = 0.9 * Rs * CLAlphaStab,
-      ih = k1 / ((k2/ k3) * k4 + k5);
+      ih = k1 / ((k2 / k3) * k4 + k5);
+
+  var CL = k1;
+  console.log("Coefficient of lift: " + CL);
 
   var alphaFlight = (ih * k2 / k3) * 180 / Math.PI;
 
@@ -189,13 +167,13 @@ function analyze(lines) {
 
   console.log("Center of Gravity Location " + xCOM);
   console.log("Neutral Point Location " + hn);
-  console.log("ESTIMATED Mass " + (massWing + massStab + massVert + massNose + massFuselage));
-  console.log("Wing Loading " + (massWing + massStab + massVert + massNose + massFuselage) / SWing);
+  console.log("ESTIMATED Mass " + massTotal);
+  console.log("Wing Loading " + massTotal / SWing);
   console.log("");
 
   console.log("Throwing Velocity " + throwingVel);
   console.log("Flight Angle of Attack " + alphaFlight);
-  console.log("Stabilizer Incidence Angle " + NaN);
+  console.log("Stabilizer Incidence Angle " + ih * 180 / Math.PI);
   console.log("ESTIMATED Stall Angle " + NaN);
   console.log("ESTIMATED Stall Velocity " + NaN);
   console.log("ESTIMATED Glide Angle " + NaN);
