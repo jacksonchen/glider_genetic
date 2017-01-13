@@ -47,6 +47,10 @@ function analyze(lines) {
       ctStab = lambdaStab * crStab,
       ctVert = lambdaVert * crVert;
 
+  if (locationWing > lengthFuselage || locationVert > lengthFuselage || locationStab > lengthFuselage) {
+    return 0;
+  }
+
   var QyWing = (1/6) * Math.pow(KWing, 3) * (Math.pow(cWing, 2) - Math.pow(aWing, 2)) + (1/2) * Math.pow(KWing, 2) * cWing * crWing + (1/2) * KWing + Math.pow(crWing, 2),
       QyStab = (1/6) * Math.pow(KStab, 3) * (Math.pow(cStab, 2) - Math.pow(aStab, 2)) + (1/2) * Math.pow(KStab, 2) * cStab * crStab + (1/2) * KStab + Math.pow(crStab, 2),
       QyVert = (1/6) * Math.pow(KVert, 3) * (Math.pow(cVert, 2) - Math.pow(aVert, 2)) + (1/2) * Math.pow(KVert, 2) * cVert * crVert + (1/2) * KVert + Math.pow(crVert, 2);
@@ -221,3 +225,5 @@ else {
     });
   }
 }
+
+module.exports.analyze = analyze;
